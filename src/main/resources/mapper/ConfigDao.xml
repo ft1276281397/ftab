@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 声明XML文件的版本和编码格式，表示这是一个符合XML 1.0规范的文件，编码为UTF-8 -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 定义文档类型声明（DOCTYPE），指定该XML文件遵循MyBatis 3.0的Mapper规范，用于验证XML文件的结构是否正确 -->
+
+<mapper namespace="com.dao.ConfigDao">
+<!-- 定义一个MyBatis的Mapper节点，namespace属性用于唯一标识这个Mapper，通常与接口类的全限定名一致，这里是com.dao.ConfigDao -->
+</mapper>
+<!-- 结束Mapper节点，表示当前Mapper配置结束 -->

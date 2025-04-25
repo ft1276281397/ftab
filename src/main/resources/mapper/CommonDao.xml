@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 声明XML文件的版本和编码格式 -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 定义MyBatis Mapper的DTD规范 -->
+
+<mapper namespace="com.dao.CommonDao">
+    <!-- 定义Mapper的命名空间，用于区分不同的Mapper -->
+
+    <select id="pieSum" resultType="map">
+        <!-- 定义查询ID为pieSum，返回结果类型为Map -->
+        select
+        d.index_name as name, <!-- 字典表中的名称字段 -->
+        a.shangpin_order_types as groupColumn, <!-- 商品订单类型，用于分组统计 -->
+        sum(a.shangpin_order_true_price) as value <!-- 商品订单真实价格的总和 -->
+        from shangpin_order a <!-- 主表：商品订单表 -->
+        LEFT JOIN dictionary d ON a.shangpin_order_types=d.code_index where d.dic_code= 'shangpin_order_types' <!-- 左连接字典表，关联订单类型 -->
+        <if test="riqi != null and riqi != ''">
+            AND date_format(a.insert_time, "%Y-%m") = #{riqi} <!-- 按日期筛选，格式为年-月 -->
+        </if>
+        GROUP BY a.shangpin_order_types <!-- 按商品订单类型分组 -->
+    </select>
+
+    <select id="pieCount" resultType="map">
+        <!-- 定义查询ID为pieCount，返回结果类型为Map -->
+        select
+        d.index_name as name, <!-- 字典表中的名称字段 -->
+        a.shangpin_order_types as groupColumn, <!-- 商品订单类型，用于分组统计 -->
+        count(a.buy_number) as value <!-- 统计购买数量 -->
+        from shangpin_order a <!-- 主表：商品订单表 -->
+        LEFT JOIN dictionary d ON a.shangpin_order_types=d.code_index where d.dic_code= 'shangpin_order_types' <!-- 左连接字典表，关联订单类型 -->
+        <if test="riqi != null and riqi != ''">
+            AND date_format(a.insert_time, "%Y-%m") = #{riqi} <!-- 按日期筛选，格式为年-月 -->
+        </if>
+        GROUP BY a.shangpin_order_types <!-- 按商品订单类型分组 -->
+    </select>
+
+    <select id="barSumOne" resultType="map">
+        <!-- 定义查询ID为barSumOne，返回结果类型为Map -->
+        select
+        d.index_name as name, <!-- 字典表中的名称字段 -->
+        a.shangpin_order_types as groupColumn, <!-- 商品订单类型，用于分组统计 -->
+        sum(a.shangpin_order_true_price) as value <!-- 商品订单真实价格的总和 -->
+        from shangpin_order a <!-- 主表：商品订单表 -->
+        LEFT JOIN dictionary d ON a.shangpin_order_types=d.code_index where d.dic_code= 'shangpin_order_types' <!-- 左连接字典表，关联订单类型 -->
+        <if test="riqi != null and riqi != ''">
+            AND date_format(a.insert_time, "%Y-%m") = #{riqi} <!-- 按日期筛选，格式为年-月 -->
+        </if>
+        GROUP BY a.shangpin_order_types <!-- 按商品订单类型分组 -->
+        <!-- 考试排名统计（被注释掉） -->
+    </select>
+
+    <select id="barCountOne" resultType="map">
+        <!-- 定义查询ID为barCountOne，返回结果类型为Map -->
+        select
+        d.index_name as name, <!-- 字典表中的名称字段 -->
+        a.shangpin_order_types as groupColumn, <!-- 商品订单类型，用于分组统计 -->
+        count(a.buy_number) as value <!-- 统计购买数量 -->
+        from shangpin_order a <!-- 主表：商品订单表 -->
+        LEFT JOIN dictionary d ON a.shangpin_order_types=d.code_index where d.dic_code= 'shangpin_order_types' <!-- 左连接字典表，关联订单类型 -->
+        <if test="riqi != null and riqi != ''">
+            AND date_format(a.insert_time, "%Y-%m") = #{riqi} <!-- 按日期筛选，格式为年-月 -->
+        </if>
+        GROUP BY a.shangpin_order_types <!-- 按商品订单类型分组 -->
+    </select>
+
+    <select id="barSumTwo" resultType="map">
+        <!-- 定义查询ID为barSumTwo，返回结果类型为Map -->
+        select
+        date_format(a.insert_time, '%Y-%m') as name1, <!-- 格式化插入时间为年-月 -->
+        s.shangpin_name as name2, <!-- 商品名称 -->
+        sum(a.shangpin_order_true_price) as value <!-- 商品订单真实价格的总和 -->
+        from shangpin_order a <!-- 主表：商品订单表 -->
+        left JOIN shangpin s on a.shangpin_id=s.id <!-- 左连接商品表，关联商品ID -->
+        where 1=1 <!-- 占位条件 -->
+        <if test="riqi != null and riqi != ''">
+            AND date_format(a.insert_time, "%Y-%m") = #{riqi} <!-- 按日期筛选，格式为年-月 -->
+        </if>
+        GROUP BY date_format(a.insert_time, '%Y-%m'),a.shangpin_id <!-- 按时间和商品ID分组 -->
+        ORDER BY name1 asc <!-- 按时间升序排序 -->
+    </select>
+
+    <select id="barCountTwo" resultType="map">
+        <!-- 定义查询ID为barCountTwo，返回结果类型为Map -->
+        select
+        date_format(a.insert_time, '%Y-%m') as name1, <!-- 格式化插入时间为年-月 -->
+        s.shangpin_name as name2, <!-- 商品名称 -->
+        count(a.buy_number) as value <!-- 统计购买数量 -->
+        from shangpin_order a <!-- 主表：商品订单表 -->
+        left JOIN shangpin s on a.shangpin_id=s.id <!-- 左连接商品表，关联商品ID -->
+        where 1=1 <!-- 占位条件 -->
+        <if test="riqi != null and riqi != ''">
+            AND date_format(a.insert_time, "%Y-%m") = #{riqi} <!-- 按日期筛选，格式为年-月 -->
+        </if>
+        GROUP BY date_format(a.insert_time, '%Y-%m'),a.shangpin_id <!-- 按时间和商品ID分组 -->
+        ORDER BY name1 asc <!-- 按时间升序排序 -->
+    </select>
+
+    <select id="queryScore" resultType="map">
+        <!-- 定义查询ID为queryScore，返回结果类型为Map -->
+        SELECT
+        avg(a.${average}) as value <!-- 计算平均值 -->
+        FROM
+        ${tableName} a <!-- 动态表名 -->
+        WHERE
+        a.${condition1} = #{condition1Value} <!-- 动态条件 -->
+    </select>
+
+    <select id="newSelectGroupSum" resultType="map">
+        <!-- 定义查询ID为newSelectGroupSum，返回结果类型为Map -->
+        select
+        d.index_name as name, <!-- 字典表中的名称字段 -->
+        a.${groupColumn} as groupColumn, <!-- 动态分组列 -->
+        sum(a.${sumColumn}) as value <!-- 动态求和列 -->
+        from ${tableName} a <!-- 动态表名 -->
+        LEFT JOIN dictionary d ON a.${groupColumn}=d.code_index where d.dic_code= #{groupColumn} <!-- 左连接字典表，动态关联 -->
+        GROUP BY a.${groupColumn} <!-- 按动态分组列分组 -->
+    </select>
+
+    <select id="newSelectGroupCount" resultType="map">
+        <!-- 定义查询ID为newSelectGroupCount，返回结果类型为Map -->
+        select
+        d.index_name as name, <!-- 字典表中的名称字段 -->
+        a.${groupColumn} as groupColumn, <!-- 动态分组列 -->
+        count(*) as value <!-- 统计总数 -->
+        from ${tableName} a <!-- 动态表名 -->
+        LEFT JOIN dictionary d ON a.${groupColumn}=d.code_index where d.dic_code= #{groupColumn} <!-- 左连接字典表，动态关联 -->
+        GROUP BY a.${groupColumn} <!-- 按动态分组列分组 -->
+    </select>
+
+    <select id="barSum" resultType="map">
+        <!-- 定义查询ID为barSum，返回结果类型为Map -->
+        select
+        <!-- 动态选择字段 -->
+        <if test="thisTable != null and thisTable.date != null">
+            <foreach item="item" index="index" collection="thisTable.date" open="" separator="," close=",">
+                date_format(thisTableName.${item}, '%Y-%m') as thisDate${index} <!-- 格式化日期字段 -->
+            </foreach>
+        </if>
+        <if test="joinTable != null and joinTable.date != null">
+            <foreach item="item" index="index" collection="joinTable.date" open="" separator="," close=",">
+                date_format(joinTableName.${item}, '%Y-%m') as joinDate${index} <!-- 格式化日期字段 -->
+            </foreach>
+        </if>
+        <if test="thisTable != null and thisTable.string != null">
+            <foreach item="item" index="index" collection="thisTable.string" open="" separator="," close=",">
+                thisTableName.${item} as thisString${index} <!-- 动态字符串字段 -->
+            </foreach>
+        </if>
+        <if test="joinTable != null and joinTable.string != null">
+            <foreach item="item" index="index" collection="joinTable.string" open="" separator="," close=",">
+                joinTableName.${item} as joinString${index} <!-- 动态字符串字段 -->
+            </foreach>
+        </if>
+        <if test="thisTable != null and thisTable.types != null">
+            <foreach item="item" index="index" collection="thisTable.types" open="" separator="," close=",">
+                ${item}.index_name as thisTypes${index} <!-- 动态类型字段 -->
+            </foreach>
+        </if>
+        <if test="joinTable != null and joinTable.types != null">
+            <foreach item="item" index="index" collection="joinTable.types" open="" separator="," close=",">
+                ${item}.index_name as joinTypes${index} <!-- 动态类型字段 -->
+            </foreach>
+        </if>
+        sum(thisTableName.${thisTable.sumColum}) as value <!-- 动态求和列 -->
+        from ${thisTable.tableName} thisTableName <!-- 动态主表 -->
+        <if test="joinTable != null and joinTable.tableName != null">
+            LEFT JOIN ${joinTable.tableName} joinTableName on thisTableName.${joinTable.tableName}_id = joinTableName.id <!-- 动态左连接 -->
+        </if>
+        <!-- 动态条件 -->
+        <choose>
+            <when test="(thisTable != null and thisTable.types != null) || (joinTable != null and joinTable.types != null)">
+                <if test="thisTable != null and thisTable.types != null">
+                    <foreach item="item" index="index" collection="thisTable.types" open="" separator="," close="">
+                        LEFT JOIN dictionary ${item} ON thisTableName.${item}=${item}.code_index <!-- 动态左连接字典表 -->
+                        WHERE ${item}.dic_code= #{item} <!-- 动态字典条件 -->
+                        <if test="(riqi != null and riqi != '') and (dateFormat != null and dateFormat != '')">
+                            AND date_format(thisTableName.insert_time, #{dateFormat}) = #{riqi} <!-- 动态日期条件 -->
+                        </if>
+                    </foreach>
+                </if>
+                <if test="joinTable != null and joinTable.types != null">
+                    <foreach item="item" index="index" collection="joinTable.types" open="" separator="," close="">
+                        LEFT JOIN dictionary ${item} ON joinTableName.${item}=${item}.code_index <!-- 动态左连接字典表 -->
+                        WHERE ${item}.dic_code= #{item} <!-- 动态字典条件 -->
+                        <if test="(riqi != null and riqi != '') and (dateFormat != null and dateFormat != '')">
+                            AND date_format(thisTableName.insert_time, #{dateFormat}) = #{riqi} <!-- 动态日期条件 -->
+                        </if>
+                    </foreach>
+                </if>
+            </when>
+            <otherwise>
+                <if test="(riqi != null and riqi != '') and (dateFormat != null and dateFormat != '')">
+                    WHERE date_format(thisTableName.insert_time, #{dateFormat}) = #{riqi} <!-- 动态日期条件 -->
+                </if>
+            </otherwise>
+        </choose>
+        <!-- 动态分组 -->
+        GROUP BY
+        <if test="thisTable != null and thisTable.date != null">
+            <foreach item="item" index="index" collection="thisTable.date" open="" separator="," close="">
+                date_format(thisTableName.${item}, '%Y-%m') <!-- 动态日期分组 -->
+            </foreach>
+            <choose>
+                <when test="(thisTable != null and( thisTable.string != null or thisTable.types != null ) )  or (joinTable != null and( joinTable.date != null or joinTable.string != null or joinTable.types != null ) )" >
+                    ,
+                </when>
+                <otherwise>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="joinTable != null and joinTable.date != null">
+            <foreach item="item" index="index" collection="joinTable.date" open="" separator="," close="">
+                date_format(joinTableName.${item}, '%Y-%m') <!-- 动态日期分组 -->
+            </foreach>
+            <choose>
+                <when test="(thisTable != null and( thisTable.string != null or thisTable.types != null ) )  or (joinTable != null and( joinTable.string != null or joinTable.types != null ) )" >
+                    ,
+                </when>
+                <otherwise>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="thisTable != null and thisTable.string != null">
+            <foreach item="item" index="index" collection="thisTable.string" open="" separator="," close="">
+                thisTableName.${item} <!-- 动态字符串分组 -->
+            </foreach>
+            <choose>
+                <when test="(thisTable != null and( thisTable.types != null ) )  or (joinTable != null and( joinTable.string != null or joinTable.types != null ) )" >
+                    ,
+                </when>
+                <otherwise>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="joinTable != null and joinTable.string != null">
+            <foreach item="item" index="index" collection="joinTable.string" open="" separator="," close="">
+                joinTableName.${item} <!-- 动态字符串分组 -->
+            </foreach>
+            <choose>
+                <when test="(thisTable != null and( thisTable.types != null ) )  or (joinTable != null and( joinTable.types != null ) )" >
+                    ,
+                </when>
+                <otherwise>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="thisTable != null and thisTable.types != null">
+            <foreach item="item" index="index" collection="thisTable.types" open="" separator="," close="">
+                thisTableName.${item} <!-- 动态类型分组 -->
+            </foreach>
+            <choose>
+                <when test="joinTable != null and joinTable.types != null" >
+                    ,
+                </when>
+                <otherwise>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="joinTable != null and joinTable.types != null">
+            <foreach item="item" index="index" collection="joinTable.types" open="" separator="," close="">
+                joinTableName.${item} <!-- 动态类型分组 -->
+            </foreach>
+        </if>
+        ORDER BY value DESC <!-- 按值降序排序 -->
+    </select>
+	<select id="barCount" resultType="map">
+    <!-- 定义查询ID为barCount，返回结果类型为Map -->
+    select
+    <if test="thisTable != null and thisTable.date != null">
+        <!-- 如果thisTable存在且包含date字段，则动态生成日期格式化列 -->
+        <foreach item="item" index="index" collection="thisTable.date" open="" separator="," close=",">
+            date_format(thisTableName.${item}, '%Y-%m') as thisDate${index} <!-- 格式化thisTable中的日期字段为年-月 -->
+        </foreach>
+    </if>
+    <if test="joinTable != null and joinTable.date != null">
+        <!-- 如果joinTable存在且包含date字段，则动态生成日期格式化列 -->
+        <foreach item="item" index="index" collection="joinTable.date" open="" separator="," close=",">
+            date_format(joinTableName.${item}, '%Y-%m') as joinDate${index} <!-- 格式化joinTable中的日期字段为年-月 -->
+        </foreach>
+    </if>
+    <if test="thisTable != null and thisTable.string != null">
+        <!-- 如果thisTable存在且包含string字段，则动态生成字符串列 -->
+        <foreach item="item" index="index" collection="thisTable.string" open="" separator="," close=",">
+            thisTableName.${item} as thisString${index} <!-- 动态选择thisTable中的字符串字段 -->
+        </foreach>
+    </if>
+    <if test="joinTable != null and joinTable.string != null">
+        <!-- 如果joinTable存在且包含string字段，则动态生成字符串列 -->
+        <foreach item="item" index="index" collection="joinTable.string" open="" separator="," close=",">
+            joinTableName.${item} as joinString${index} <!-- 动态选择joinTable中的字符串字段 -->
+        </foreach>
+    </if>
+    <if test="thisTable != null and thisTable.types != null">
+        <!-- 如果thisTable存在且包含types字段，则动态生成字典表关联列 -->
+        <foreach item="item" index="index" collection="thisTable.types" open="" separator="," close=",">
+            ${item}.index_name as thisTypes${index} <!-- 动态选择thisTable中的类型字段 -->
+        </foreach>
+    </if>
+    <if test="joinTable != null and joinTable.types != null">
+        <!-- 如果joinTable存在且包含types字段，则动态生成字典表关联列 -->
+        <foreach item="item" index="index" collection="joinTable.types" open="" separator="," close=",">
+            ${item}.index_name as joinTypes${index} <!-- 动态选择joinTable中的类型字段 -->
+        </foreach>
+    </if>
+    count(*) as value <!-- 统计符合条件的记录数 -->
+    from ${thisTable.tableName} thisTableName <!-- 主表名，动态指定 -->
+    <if test="joinTable != null and joinTable.tableName != null">
+        <!-- 如果joinTable存在，则进行左连接 -->
+        LEFT JOIN ${joinTable.tableName} joinTableName on thisTableName.${joinTable.tableName}_id = joinTableName.id
+    </if>
+
+    <choose>
+        <!-- 条件分支，用于动态生成WHERE子句 -->
+        <when test="(thisTable != null and thisTable.types != null) || (joinTable != null and joinTable.types != null)">
+            <!-- 如果thisTable或joinTable包含types字段，则生成字典表关联条件 -->
+            <if test="thisTable != null and thisTable.types != null">
+                <foreach item="item" index="index" collection="thisTable.types" open="" separator="," close="">
+                    LEFT JOIN dictionary ${item} ON thisTableName.${item}=${item}.code_index <!-- 左连接字典表 -->
+                    WHERE ${item}.dic_code= #{item} <!-- 指定字典表的dic_code条件 -->
+                    <if test="(riqi != null and riqi != '') and (dateFormat != null and dateFormat != '')">
+                        AND date_format(thisTableName.insert_time, #{dateFormat}) = #{riqi} <!-- 动态日期筛选条件 -->
+                    </if>
+                </foreach>
+            </if>
+            <if test="joinTable != null and joinTable.types != null">
+                <foreach item="item" index="index" collection="joinTable.types" open="" separator="," close="">
+                    LEFT JOIN dictionary ${item} ON joinTableName.${item}=${item}.code_index <!-- 左连接字典表 -->
+                    WHERE ${item}.dic_code= #{item} <!-- 指定字典表的dic_code条件 -->
+                    <if test="(riqi != null and riqi != '') and (dateFormat != null and dateFormat != '')">
+                        AND date_format(thisTableName.insert_time, #{dateFormat}) = #{riqi} <!-- 动态日期筛选条件 -->
+                    </if>
+                </foreach>
+            </if>
+        </when>
+        <otherwise>
+            <!-- 如果没有types字段，则直接生成日期筛选条件 -->
+            <if test="(riqi != null and riqi != '') and (dateFormat != null and dateFormat != '')">
+                WHERE date_format(thisTableName.insert_time, #{dateFormat}) = #{riqi} <!-- 动态日期筛选条件 -->
+            </if>
+        </otherwise>
+    </choose>
+    GROUP BY
+    <if test="thisTable != null and thisTable.date != null">
+        <!-- 如果thisTable包含date字段，则按日期分组 -->
+        <foreach item="item" index="index" collection="thisTable.date" open="" separator="," close="">
+            date_format(thisTableName.${item}, '%Y-%m') <!-- 按日期格式化后的值分组 -->
+        </foreach>
+        <choose>
+            <when test="(thisTable != null and( thisTable.string != null or thisTable.types != null ) )  or (joinTable != null and( joinTable.date != null or joinTable.string != null or joinTable.types != null ) )" >
+                , <!-- 如果还有其他字段需要分组，则添加逗号分隔 -->
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </if>
+    <if test="joinTable != null and joinTable.date != null">
+        <!-- 如果joinTable包含date字段，则按日期分组 -->
+        <foreach item="item" index="index" collection="joinTable.date" open="" separator="," close="">
+            date_format(joinTableName.${item}, '%Y-%m') <!-- 按日期格式化后的值分组 -->
+        </foreach>
+        <choose>
+            <when test="(thisTable != null and( thisTable.string != null or thisTable.types != null ) )  or (joinTable != null and( joinTable.string != null or joinTable.types != null ) )" >
+                , <!-- 如果还有其他字段需要分组，则添加逗号分隔 -->
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </if>
+    <if test="thisTable != null and thisTable.string != null">
+        <!-- 如果thisTable包含string字段，则按字符串字段分组 -->
+        <foreach item="item" index="index" collection="thisTable.string" open="" separator="," close="">
+            thisTableName.${item} <!-- 按字符串字段分组 -->
+        </foreach>
+        <choose>
+            <when test="(thisTable != null and( thisTable.types != null ) )  or (joinTable != null and( joinTable.string != null or joinTable.types != null ) )" >
+                , <!-- 如果还有其他字段需要分组，则添加逗号分隔 -->
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </if>
+    <if test="joinTable != null and joinTable.string != null">
+        <!-- 如果joinTable包含string字段，则按字符串字段分组 -->
+        <foreach item="item" index="index" collection="joinTable.string" open="" separator="," close="">
+            joinTableName.${item} <!-- 按字符串字段分组 -->
+        </foreach>
+        <choose>
+            <when test="(thisTable != null and( thisTable.types != null ) )  or (joinTable != null and( joinTable.types != null ) )" >
+                , <!-- 如果还有其他字段需要分组，则添加逗号分隔 -->
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </if>
+    <if test="thisTable != null and thisTable.types != null">
+        <!-- 如果thisTable包含types字段，则按类型字段分组 -->
+        <foreach item="item" index="index" collection="thisTable.types" open="" separator="," close="">
+            thisTableName.${item} <!-- 按类型字段分组 -->
+        </foreach>
+        <choose>
+            <when test="joinTable != null and joinTable.types != null" >
+                , <!-- 如果还有其他字段需要分组，则添加逗号分隔 -->
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </if>
+    <if test="joinTable != null and joinTable.types != null">
+        <!-- 如果joinTable包含types字段，则按类型字段分组 -->
+        <foreach item="item" index="index" collection="joinTable.types" open="" separator="," close="">
+            joinTableName.${item} <!-- 按类型字段分组 -->
+        </foreach>
+    </if>
+    ORDER BY value DESC <!-- 按统计值降序排序 -->
+</select>
+</mapper>

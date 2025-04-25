@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 声明XML文件的版本和编码格式，表示这是一个符合XML 1.0规范的文件，编码为UTF-8 -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 定义文档类型声明（DOCTYPE），指定该XML文件遵循MyBatis 3.0的Mapper规范，用于验证XML文件的结构是否正确 -->
+
+<mapper namespace="com.dao.ForumDao">
+<!-- 定义一个MyBatis的Mapper节点，namespace属性用于唯一标识这个Mapper，通常与接口类的全限定名一致，这里是com.dao.ForumDao -->
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+    <!-- 定义一个SQL片段，id为Base_Column_List，用于在其他SQL语句中复用 -->
+        a.id as id
+        <!-- 选择forum表的id字段，并重命名为id -->
+        ,a.forum_name as forumName
+        <!-- 选择forum表的forum_name字段，并重命名为forumName -->
+        ,a.yonghu_id as yonghuId
+        <!-- 选择forum表的yonghu_id字段，并重命名为yonghuId -->
+        ,a.users_id as usersId
+        <!-- 选择forum表的users_id字段，并重命名为usersId -->
+        ,a.forum_content as forumContent
+        <!-- 选择forum表的forum_content字段，并重命名为forumContent -->
+        ,a.super_ids as superIds
+        <!-- 选择forum表的super_ids字段，并重命名为superIds -->
+        ,a.forum_state_types as forumStateTypes
+        <!-- 选择forum表的forum_state_types字段，并重命名为forumStateTypes -->
+        ,a.insert_time as insertTime
+        <!-- 选择forum表的insert_time字段，并重命名为insertTime -->
+        ,a.update_time as updateTime
+        <!-- 选择forum表的update_time字段，并重命名为updateTime -->
+        ,a.create_time as createTime
+        <!-- 选择forum表的create_time字段，并重命名为createTime -->
+    </sql>
+    <!-- 结束SQL片段定义 -->
+
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ForumView" >
+    <!-- 定义一个查询语句，id为selectListView，参数类型为map，返回结果类型为com.entity.view.ForumView -->
+        SELECT
+        <!-- 开始SELECT语句 -->
+        <include refid="Base_Column_List" />
+        <!-- 引用之前定义的SQL片段Base_Column_List，包含通用查询结果列 -->
+        <!-- 级联表的字段 -->
+        ,yonghu.yonghu_name as yonghuName
+        <!-- 选择yonghu表的yonghu_name字段，并重命名为yonghuName -->
+        ,yonghu.yonghu_photo as yonghuPhoto
+        <!-- 选择yonghu表的yonghu_photo字段，并重命名为yonghuPhoto -->
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        <!-- 选择yonghu表的yonghu_id_number字段，并重命名为yonghuIdNumber -->
+        ,yonghu.yonghu_phone as yonghuPhone
+        <!-- 选择yonghu表的yonghu_phone字段，并重命名为yonghuPhone -->
+        ,yonghu.yonghu_email as yonghuEmail
+        <!-- 选择yonghu表的yonghu_email字段，并重命名为yonghuEmail -->
+        ,yonghu.yonghu_delete as yonghuDelete
+        <!-- 选择yonghu表的yonghu_delete字段，并重命名为yonghuDelete -->
+        ,users.username as uusername
+        <!-- 选择users表的username字段，并重命名为uusername -->
+        ,users.password as upassword
+        <!-- 选择users表的password字段，并重命名为upassword -->
+        ,users.role as urole
+        <!-- 选择users表的role字段，并重命名为urole -->
+        ,users.addtime as uaddtime
+        <!-- 选择users表的addtime字段，并重命名为uaddtime -->
+
+        FROM forum  a
+        <!-- 从forum表中选择数据，并使用别名a -->
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+        <!-- 左连接yonghu表，条件是forum表的yonghu_id等于yonghu表的id -->
+        left JOIN users users ON a.users_id = users.id
+        <!-- 左连接users表，条件是forum表的users_id等于users表的id -->
+
+        <where>
+        <!-- 开始WHERE子句，用于动态生成条件 -->
+            <if test="params.ids != null">
+            <!-- 如果params.ids不为空，则生成IN条件 -->
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                <!-- 使用foreach循环遍历params.ids集合，生成IN子句中的值列表 -->
+                #{item}
+                <!-- 引用集合中的每个元素 -->
+                </foreach>
+            </if>
+            <if test=" params.forumName != '' and params.forumName != null and params.forumName != 'null' ">
+            <!-- 如果params.forumName不为空字符串且不为null且不为'null'，则生成模糊匹配条件 -->
+                and a.forum_name like CONCAT('%',#{params.forumName},'%')
+                <!-- 选择forum表的forum_name字段包含params.forumName -->
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+            <!-- 如果params.yonghuId不为空且不为空字符串，则生成等于条件 -->
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                    <!-- 选择forum表的yonghu_id字段等于params.yonghuId -->
+                )
+            </if>
+            <if test="params.usersId != null and params.usersId != ''">
+            <!-- 如果params.usersId不为空且不为空字符串，则生成等于条件 -->
+                and (
+                    a.users_id = #{params.usersId}
+                    <!-- 选择forum表的users_id字段等于params.usersId -->
+                )
+            </if>
+            <if test=" params.forumContent != '' and params.forumContent != null and params.forumContent != 'null' ">
+            <!-- 如果params.forumContent不为空字符串且不为null且不为'null'，则生成模糊匹配条件 -->
+                and a.forum_content like CONCAT('%',#{params.forumContent},'%')
+                <!-- 选择forum表的forum_content字段包含params.forumContent -->
+            </if>
+            <if test="params.superIdsStart != null and params.superIdsStart != ''">
+            <!-- 如果params.superIdsStart不为空且不为空字符串，则生成大于等于条件 -->
+                <![CDATA[  and a.super_ids >= #{params.superIdsStart}   ]]>
+                <!-- 选择forum表的super_ids字段大于等于params.superIdsStart -->
+            </if>
+            <if test="params.superIdsEnd != null and params.superIdsEnd != ''">
+            <!-- 如果params.superIdsEnd不为空且不为空字符串，则生成小于等于条件 -->
+                <![CDATA[  and a.super_ids <= #{params.superIdsEnd}   ]]>
+                <!-- 选择forum表的super_ids字段小于等于params.superIdsEnd -->
+            </if>
+             <if test="params.superIds != null and params.superIds != ''">
+             <!-- 如果params.superIds不为空且不为空字符串，则生成等于条件 -->
+                and a.super_ids = #{params.superIds}
+                <!-- 选择forum表的super_ids字段等于params.superIds -->
+             </if>
+            <if test="params.forumStateTypes != null and params.forumStateTypes != ''">
+            <!-- 如果params.forumStateTypes不为空且不为空字符串，则生成等于条件 -->
+                and a.forum_state_types = #{params.forumStateTypes}
+                <!-- 选择forum表的forum_state_types字段等于params.forumStateTypes -->
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+            <!-- 如果params.insertTimeStart不为空字符串且不为null，则生成大于等于条件 -->
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+                <!-- 选择forum表的insert_time字段大于等于params.insertTimeStart -->
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+            <!-- 如果params.insertTimeEnd不为空字符串且不为null，则生成小于等于条件 -->
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+                <!-- 选择forum表的insert_time字段小于等于params.insertTimeEnd -->
+            </if>
+            <if test=" params.updateTimeStart != '' and params.updateTimeStart != null ">
+            <!-- 如果params.updateTimeStart不为空字符串且不为null，则生成大于等于条件 -->
+                <![CDATA[  and UNIX_TIMESTAMP(a.update_time) >= UNIX_TIMESTAMP(#{params.updateTimeStart}) ]]>
+                <!-- 选择forum表的update_time字段大于等于params.updateTimeStart -->
+            </if>
+            <if test=" params.updateTimeEnd != '' and params.updateTimeEnd != null ">
+            <!-- 如果params.updateTimeEnd不为空字符串且不为null，则生成小于等于条件 -->
+                <![CDATA[  and UNIX_TIMESTAMP(a.update_time) <= UNIX_TIMESTAMP(#{params.updateTimeEnd}) ]]>
+                <!-- 选择forum表的update_time字段小于等于params.updateTimeEnd -->
+            </if>
+
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+            <!-- 如果params.yonghuIdNotNull不为空字符串且不为null且不为'null'，则生成IS NOT NULL条件 -->
+                and a.yonghu_id IS NOT NULL
+                <!-- 选择forum表的yonghu_id字段不为空 -->
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+            <!-- 如果params.yonghuName不为空字符串且不为null且不为'null'，则生成模糊匹配条件 -->
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+                <!-- 选择yonghu表的yonghu_name字段包含params.yonghuName -->
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+            <!-- 如果params.yonghuIdNumber不为空字符串且不为null且不为'null'，则生成模糊匹配条件 -->
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+                <!-- 选择yonghu表的yonghu_id_number字段包含params.yonghuIdNumber -->
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+            <!-- 如果params.yonghuPhone不为空字符串且不为null且不为'null'，则生成模糊匹配条件 -->
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+                <!-- 选择yonghu表的yonghu_phone字段包含params.yonghuPhone -->
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+            <!-- 如果params.yonghuEmail不为空字符串且不为null且不为'null'，则生成模糊匹配条件 -->
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+                <!-- 选择yonghu表的yonghu_email字段包含params.yonghuEmail -->
+            </if>
+            <if test="params.yonghuDeleteStart != null  and params.yonghuDeleteStart != '' ">
+            <!-- 如果params.yonghuDeleteStart不为空且不为空字符串，则生成大于等于条件 -->
+                <![CDATA[  and yonghu.yonghu_delete >= #{params.yonghuDeleteStart}   ]]>
+                <!-- 选择yonghu表的yonghu_delete字段大于等于params.yonghuDeleteStart -->
+            </if>
+            <if test="params.yonghuDeleteEnd != null  and params.yonghuDeleteEnd != '' ">
+            <!-- 如果params.yonghuDeleteEnd不为空且不为空字符串，则生成小于等于条件 -->
+                <![CDATA[  and yonghu.yonghu_delete <= #{params.yonghuDeleteEnd}   ]]>
+                <!-- 选择yonghu表的yonghu_delete字段小于等于params.yonghuDeleteEnd -->
+            </if>
+            <if test="params.yonghuDelete != null  and params.yonghuDelete != '' ">
+            <!-- 如果params.yonghuDelete不为空且不为空字符串，则生成等于条件 -->
+                and yonghu.yonghu_delete = #{params.yonghuDelete}
+                <!-- 选择yonghu表的yonghu_delete字段等于params.yonghuDelete -->
+            </if>
+                <!-- 判断管理员的id不为空 -->
+            <if test=" params.usersIdNotNull != '' and params.usersIdNotNull != null and params.usersIdNotNull != 'null' ">
+            <!-- 如果params.usersIdNotNull不为空字符串且不为null且不为'null'，则生成IS NOT NULL条件 -->
+                and a.users_id IS NOT NULL
+                <!-- 选择forum表的users_id字段不为空 -->
+            </if>
+            <if test=" params.username != '' and params.username != null and params.username != 'null' ">
+            <!-- 如果params.username不为空字符串且不为null且不为'null'，则生成模糊匹配条件 -->
+                and users.username like CONCAT('%',#{params.username},'%')
+                <!-- 选择users表的username字段包含params.username -->
+            </if>
+            <if test=" params.password != '' and params.password != null and params.password != 'null' ">
+            <!-- 如果params.password不为空字符串且不为null且不为'null'，则生成模糊匹配条件 -->
+                and users.password like CONCAT('%',#{params.password},'%')
+                <!-- 选择users表的password字段包含params.password -->
+            </if>
+            <if test=" params.role != '' and params.role != null and params.role != 'null' ">
+            <!-- 如果params.role不为空字符串且不为null且不为'null'，则生成模糊匹配条件 -->
+                and users.role like CONCAT('%',#{params.role},'%')
+                <!-- 选择users表的role字段包含params.role -->
+            </if>
+            <if test=" params.addtimeStart != '' and params.addtimeStart != null ">
+            <!-- 如果params.addtimeStart不为空字符串且不为null，则生成大于等于条件 -->
+                <![CDATA[  and UNIX_TIMESTAMP(users.addtime) >= UNIX_TIMESTAMP(#{params.addtimeStart}) ]]>
+                <!-- 选择users表的addtime字段大于等于params.addtimeStart -->
+            </if>
+            <if test=" params.addtimeEnd != '' and params.addtimeEnd != null ">
+            <!-- 如果params.addtimeEnd不为空字符串且不为null，则生成小于等于条件 -->
+                <![CDATA[  and UNIX_TIMESTAMP(users.addtime) <= UNIX_TIMESTAMP(#{params.addtimeEnd}) ]]>
+                <!-- 选择users表的addtime字段小于等于params.addtimeEnd -->
+            </if>
+        </where>
+        <!-- 结束WHERE子句 -->
+        order by a.${params.sort} ${params.order}
+        <!-- 按照params.sort字段排序，排序方式由params.order决定 -->
+    </select>
+    <!-- 结束SELECT语句 -->
+
+</mapper>
+<!-- 结束Mapper节点 -->

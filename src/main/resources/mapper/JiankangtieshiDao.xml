@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 声明XML文件的版本和编码格式，表示这是一个符合XML 1.0规范的文件，编码为UTF-8 -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 定义文档类型声明（DOCTYPE），指定该XML文件遵循MyBatis 3.0的Mapper规范，用于验证XML文件的结构是否正确 -->
+
+<mapper namespace="com.dao.GerentizhengDao">
+<!-- 定义一个MyBatis的Mapper节点，namespace属性用于唯一标识这个Mapper，通常与接口类的全限定名一致，这里是com.dao.GerentizhengDao -->
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+    <!-- 定义一个SQL片段，id为Base_Column_List，用于在其他SQL语句中复用 -->
+        a.id as id
+        <!-- 选择gerentizheng表的id字段，并重命名为id -->
+        ,a.yonghu_id as yonghuId
+        <!-- 选择gerentizheng表的yonghu_id字段，并重命名为yonghuId -->
+        ,a.gerentizheng_num as gerentizhengNum
+        <!-- 选择gerentizheng表的gerentizheng_num字段，并重命名为gerentizhengNum -->
+        ,a.tizhong_num as tizhongNum
+        <!-- 选择gerentizheng表的tizhong_num字段，并重命名为tizhongNum -->
+        ,a.shenti_types as shentiTypes
+        <!-- 选择gerentizheng表的shenti_types字段，并重命名为shentiTypes -->
+        ,a.meishi_photo as meishiPhoto
+        <!-- 选择gerentizheng表的meishi_photo字段，并重命名为meishiPhoto -->
+        ,a.gerentizheng_content as gerentizhengContent
+        <!-- 选择gerentizheng表的gerentizheng_content字段，并重命名为gerentizhengContent -->
+        ,a.gerentizheng_time as gerentizhengTime
+        <!-- 选择gerentizheng表的gerentizheng_time字段，并重命名为gerentizhengTime -->
+        ,a.gerentizheng_delete as gerentizhengDelete
+        <!-- 选择gerentizheng表的gerentizheng_delete字段，并重命名为gerentizhengDelete -->
+        ,a.insert_time as insertTime
+        <!-- 选择gerentizheng表的insert_time字段，并重命名为insertTime -->
+        ,a.create_time as createTime
+        <!-- 选择gerentizheng表的create_time字段，并重命名为createTime -->
+    </sql>
+    <!-- 结束SQL片段定义 -->
+
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.GerentizhengView" >
+    <!-- 定义一个查询语句，id为selectListView，参数类型为map，返回结果类型为com.entity.view.GerentizhengView -->
+        SELECT
+        <!-- 开始SELECT语句 -->
+        <include refid="Base_Column_List" />
+        <!-- 引用之前定义的SQL片段Base_Column_List，包含通用查询结果列 -->
+        <!-- 级联表的字段 -->
+        ,yonghu.yonghu_name as yonghuName
+        <!-- 选择yonghu表的yonghu_name字段，并重命名为yonghuName -->
+        ,yonghu.yonghu_photo as yonghuPhoto
+        <!-- 选择yonghu表的yonghu_photo字段，并重命名为yonghuPhoto -->
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        <!-- 选择yonghu表的yonghu_id_number字段，并重命名为yonghuIdNumber -->
+        ,yonghu.yonghu_phone as yonghuPhone
+        <!-- 选择yonghu表的yonghu_phone字段，并重命名为yonghuPhone -->
+        ,yonghu.yonghu_email as yonghuEmail
+        <!-- 选择yonghu表的yonghu_email字段，并重命名为yonghuEmail -->
+        ,yonghu.yonghu_delete as yonghuDelete
+        <!-- 选择yonghu表的yonghu_delete字段，并重命名为yonghuDelete -->
+
+        FROM gerentizheng  a
+        <!-- 从gerentizheng表中选择数据，并使用别名a -->
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+        <!-- 左连接yonghu表，条件是gerentizheng表的yonghu_id等于yonghu表的id -->
+
+        <where>
+        <!-- 开始WHERE子句，用于动态生成条件 -->
+            <if test="params.ids != null">
+            <!-- 如果params.ids不为空，则生成IN条件 -->
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                <!-- 使用foreach循环遍历params.ids集合，生成IN子句中的值列表 -->
+                #{item}
+                <!-- 引用集合中的每个元素 -->
+                </foreach>
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+            <!-- 如果params.yonghuId不为空且不为空字符串，则生成等于条件 -->
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                    <!-- 选择gerentizheng表的yonghu_id字段等于params.yonghuId -->
+                )
+            </if>
+            <if test="params.gerentizhengNumStart != null ">
+            <!-- 如果params.gerentizhengNumStart不为空，则生成大于等于条件 -->
+                <![CDATA[  and a.gerentizheng_num >= #{params.gerentizhengNumStart}   ]]>
+                <!-- 选择gerentizheng表的gerentizheng_num字段大于等于params.gerentizhengNumStart -->
+            </if>
+            <if test="params.gerentizhengNumEnd != null ">
+            <!-- 如果params.gerentizhengNumEnd不为空，则生成小于等于条件 -->
+                <![CDATA[  and a.gerentizheng_num <= #{params.gerentizhengNumEnd}   ]]>
+                <!-- 选择gerentizheng表的gerentizheng_num字段小于等于params.gerentizhengNumEnd -->
+            </if>
+            <if test="params.tizhongNumStart != null ">
+            <!-- 如果params.tizhongNumStart不为空，则生成大于等于条件 -->
+                <![CDATA[  and a.tizhong_num >= #{params.tizhongNumStart}   ]]>
+                <!-- 选择gerentizheng表的tizhong_num字段大于等于params.tizhongNumStart -->
+            </if>
+            <if test="params.tizhongNumEnd != null ">
+            <!-- 如果params.tizhongNumEnd不为空，则生成小于等于条件 -->
+                <![CDATA[  and a.tizhong_num <= #{params.tizhongNumEnd}   ]]>
+                <!-- 选择gerentizheng表的tizhong_num字段小于等于params.tizhongNumEnd -->
+            </if>
+            <if test="params.shentiTypes != null and params.shentiTypes != ''">
+            <!-- 如果params.shentiTypes不为空且不为空字符串，则生成等于条件 -->
+                and a.shenti_types = #{params.shentiTypes}
+                <!-- 选择gerentizheng表的shenti_types字段等于params.shentiTypes -->
+            </if>
+            <if test=" params.gerentizhengContent != '' and params.gerentizhengContent != null and params.gerentizhengContent != 'null' ">
+            <!-- 如果params.gerentizhengContent不为空字符串且不为null且不为'null'，则生成模糊匹配条件 -->
+                and a.gerentizheng_content like CONCAT('%',#{params.gerentizhengContent},'%')
+                <!-- 选择gerentizheng表的gerentizheng_content字段包含params.gerentizhengContent -->
+            </if>
+            <if test=" params.gerentizhengTimeStart != '' and params.gerentizhengTimeStart != null ">
+            <!-- 如果params.gerentizhengTimeStart不为空字符串且不为null，则生成大于等于条件 -->
+                <![CDATA[  and UNIX_TIMESTAMP(a.gerentizheng_time) >= UNIX_TIMESTAMP(#{params.gerentizhengTimeStart}) ]]>
+                <!-- 选择gerentizheng表的gerentizheng_time字段大于等于params.gerentizhengTimeStart -->
+            </if>
+            <if test=" params.gerentizhengTimeEnd != '' and params.gerentizhengTimeEnd != null ">
+            <!-- 如果params.gerentizhengTimeEnd不为空字符串且不为null，则生成小于等于条件 -->
+                <![CDATA[  and UNIX_TIMESTAMP(a.gerentizheng_time) <= UNIX_TIMESTAMP(#{params.gerentizhengTimeEnd}) ]]>
+                <!-- 选择gerentizheng表的gerentizheng_time字段小于等于params.gerentizhengTimeEnd -->
+            </if>
+            <if test="params.gerentizhengDeleteStart != null and params.gerentizhengDeleteStart != ''">
+            <!-- 如果params.gerentizhengDeleteStart不为空且不为空字符串，则生成大于等于条件 -->
+                <![CDATA[  and a.gerentizheng_delete >= #{params.gerentizhengDeleteStart}   ]]>
+                <!-- 选择gerentizheng表的gerentizheng_delete字段大于等于params.gerentizhengDeleteStart -->
+            </if>
+            <if test="params.gerentizhengDeleteEnd != null and params.gerentizhengDeleteEnd != ''">
+            <!-- 如果params.gerentizhengDeleteEnd不为空且不为空字符串，则生成小于等于条件 -->
+                <![CDATA[  and a.gerentizheng_delete <= #{params.gerentizhengDeleteEnd}   ]]>
+                <!-- 选择gerentizheng表的gerentizheng_delete字段小于等于params.gerentizhengDeleteEnd -->
+            </if>
+             <if test="params.gerentizhengDelete != null and params.gerentizhengDelete != ''">
+             <!-- 如果params.gerentizhengDelete不为空且不为空字符串，则生成等于条件 -->
+                and a.gerentizheng_delete = #{params.gerentizhengDelete}
+                <!-- 选择gerentizheng表的gerentizheng_delete字段等于params.gerentizhengDelete -->
+             </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+            <!-- 如果params.insertTimeStart不为空字符串且不为null，则生成大于等于条件 -->
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+                <!-- 选择gerentizheng表的insert_time字段大于等于params.insertTimeStart -->
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+            <!-- 如果params.insertTimeEnd不为空字符串且不为null，则生成小于等于条件 -->
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+                <!-- 选择gerentizheng表的insert_time字段小于等于params.insertTimeEnd -->
+            </if>
+
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+            <!-- 如果params.yonghuIdNotNull不为空字符串且不为null且不为'null'，则生成IS NOT NULL条件 -->
+                and a.yonghu_id IS NOT NULL
+                <!-- 选择gerentizheng表的yonghu_id字段不为空 -->
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+            <!-- 如果params.yonghuName不为空字符串且不为null且不为'null'，则生成模糊匹配条件 -->
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+                <!-- 选择yonghu表的yonghu_name字段包含params.yonghuName -->
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+            <!-- 如果params.yonghuIdNumber不为空字符串且不为null且不为'null'，则生成模糊匹配条件 -->
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+                <!-- 选择yonghu表的yonghu_id_number字段包含params.yonghuIdNumber -->
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+            <!-- 如果params.yonghuPhone不为空字符串且不为null且不为'null'，则生成模糊匹配条件 -->
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+                <!-- 选择yonghu表的yonghu_phone字段包含params.yonghuPhone -->
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+            <!-- 如果params.yonghuEmail不为空字符串且不为null且不为'null'，则生成模糊匹配条件 -->
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+                <!-- 选择yonghu表的yonghu_email字段包含params.yonghuEmail -->
+            </if>
+            <if test="params.yonghuDeleteStart != null  and params.yonghuDeleteStart != '' ">
+            <!-- 如果params.yonghuDeleteStart不为空且不为空字符串，则生成大于等于条件 -->
+                <![CDATA[  and yonghu.yonghu_delete >= #{params.yonghuDeleteStart}   ]]>
+                <!-- 选择yonghu表的yonghu_delete字段大于等于params.yonghuDeleteStart -->
+            </if>
+            <if test="params.yonghuDeleteEnd != null  and params.yonghuDeleteEnd != '' ">
+            <!-- 如果params.yonghuDeleteEnd不为空且不为空字符串，则生成小于等于条件 -->
+                <![CDATA[  and yonghu.yonghu_delete <= #{params.yonghuDeleteEnd}   ]]>
+                <!-- 选择yonghu表的yonghu_delete字段小于等于params.yonghuDeleteEnd -->
+            </if>
+            <if test="params.yonghuDelete != null  and params.yonghuDelete != '' ">
+            <!-- 如果params.yonghuDelete不为空且不为空字符串，则生成等于条件 -->
+                and yonghu.yonghu_delete = #{params.yonghuDelete}
+                <!-- 选择yonghu表的yonghu_delete字段等于params.yonghuDelete -->
+            </if>
+        </where>
+        <!-- 结束WHERE子句 -->
+        order by a.${params.sort} ${params.order}
+        <!-- 按照params.sort字段排序，排序方式由params.order决定 -->
+    </select>
+    <!-- 结束SELECT语句 -->
+
+</mapper>
+<!-- 结束Mapper节点 -->

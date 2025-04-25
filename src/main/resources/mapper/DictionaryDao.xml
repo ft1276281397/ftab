@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 声明XML文件的版本和编码格式，表示这是一个符合XML 1.0规范的文件，编码为UTF-8 -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 定义文档类型声明（DOCTYPE），指定该XML文件遵循MyBatis 3.0的Mapper规范，用于验证XML文件的结构是否正确 -->
+
+<mapper namespace="com.dao.DictionaryDao">
+<!-- 定义一个MyBatis的Mapper节点，namespace属性用于唯一标识这个Mapper，通常与接口类的全限定名一致，这里是com.dao.DictionaryDao -->
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+    <!-- 定义一个SQL片段，id为Base_Column_List，用于在其他SQL语句中复用 -->
+        a.id as id
+        <!-- 选择字典表的id字段，并重命名为id -->
+        ,a.dic_code as dicCode
+        <!-- 选择字典表的dic_code字段，并重命名为dicCode -->
+        ,a.dic_name as dicName
+        <!-- 选择字典表的dic_name字段，并重命名为dicName -->
+        ,a.code_index as codeIndex
+        <!-- 选择字典表的code_index字段，并重命名为codeIndex -->
+        ,a.index_name as indexName
+        <!-- 选择字典表的index_name字段，并重命名为indexName -->
+        ,a.super_id as superId
+        <!-- 选择字典表的super_id字段，并重命名为superId -->
+        ,a.beizhu as beizhu
+        <!-- 选择字典表的beizhu字段，并重命名为beizhu -->
+        ,a.create_time as createTime
+        <!-- 选择字典表的create_time字段，并重命名为createTime -->
+    </sql>
+    <!-- 结束SQL片段定义 -->
+
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.DictionaryView" >
+    <!-- 定义一个查询语句，id为selectListView，参数类型为map，返回结果类型为com.entity.view.DictionaryView -->
+        SELECT
+        <!-- 开始SELECT语句 -->
+        <include refid="Base_Column_List" />
+        <!-- 引用之前定义的SQL片段Base_Column_List，包含通用查询结果列 -->
+        <!-- 级联表的字段 -->
+
+        FROM dictionary  a
+        <!-- 从字典表dictionary中选择数据，并使用别名a -->
+
+        <where>
+        <!-- 开始WHERE子句，用于动态生成条件 -->
+            <if test="params.ids != null">
+            <!-- 如果params.ids不为空，则生成IN条件 -->
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                <!-- 使用foreach循环遍历params.ids集合，生成IN子句中的值列表 -->
+                #{item}
+                <!-- 引用集合中的每个元素 -->
+                </foreach>
+            </if>
+            <if test=" params.dicCode != '' and params.dicCode != null and params.dicCode != 'null' ">
+            <!-- 如果params.dicCode不为空字符串且不为null且不为'null'，则生成等于条件 -->
+                and a.dic_code  = #{params.dicCode}
+                <!-- 选择字典表的dic_code字段等于params.dicCode -->
+            </if>
+            <if test=" params.dicName != '' and params.dicName != null and params.dicName != 'null' ">
+            <!-- 如果params.dicName不为空字符串且不为null且不为'null'，则生成模糊匹配条件 -->
+                and a.dic_name like CONCAT('%',#{params.dicName},'%')
+                <!-- 选择字典表的dic_name字段包含params.dicName -->
+            </if>
+            <if test="params.codeIndexStart != null and params.codeIndexStart != ''">
+            <!-- 如果params.codeIndexStart不为空且不为空字符串，则生成大于等于条件 -->
+                <![CDATA[  and a.code_index >= #{params.codeIndexStart}   ]]>
+                <!-- 选择字典表的code_index字段大于等于params.codeIndexStart -->
+            </if>
+            <if test="params.codeIndexEnd != null and params.codeIndexEnd != ''">
+            <!-- 如果params.codeIndexEnd不为空且不为空字符串，则生成小于等于条件 -->
+                <![CDATA[  and a.code_index <= #{params.codeIndexEnd}   ]]>
+                <!-- 选择字典表的code_index字段小于等于params.codeIndexEnd -->
+            </if>
+             <if test="params.codeIndex != null and params.codeIndex != ''">
+             <!-- 如果params.codeIndex不为空且不为空字符串，则生成等于条件 -->
+                and a.code_index = #{params.codeIndex}
+                <!-- 选择字典表的code_index字段等于params.codeIndex -->
+             </if>
+            <if test=" params.indexName != '' and params.indexName != null and params.indexName != 'null' ">
+            <!-- 如果params.indexName不为空字符串且不为null且不为'null'，则生成模糊匹配条件 -->
+                and a.index_name like CONCAT('%',#{params.indexName},'%')
+                <!-- 选择字典表的index_name字段包含params.indexName -->
+            </if>
+            <if test="params.superId != null and params.superId != ''">
+            <!-- 如果params.superId不为空且不为空字符串，则生成等于条件 -->
+                and (
+                    a.super_id = #{params.superId}
+                    <!-- 选择字典表的super_id字段等于params.superId -->
+                )
+            </if>
+            <if test=" params.beizhu != '' and params.beizhu != null and params.beizhu != 'null' ">
+            <!-- 如果params.beizhu不为空字符串且不为null且不为'null'，则生成模糊匹配条件 -->
+                and a.beizhu like CONCAT('%',#{params.beizhu},'%')
+                <!-- 选择字典表的beizhu字段包含params.beizhu -->
+            </if>
+
+        </where>
+        <!-- 结束WHERE子句 -->
+        order by a.${params.sort} ${params.order}
+        <!-- 按照params.sort字段排序，排序方式由params.order决定 -->
+    </select>
+    <!-- 结束SELECT语句 -->
+
+</mapper>
+<!-- 结束Mapper节点 -->
